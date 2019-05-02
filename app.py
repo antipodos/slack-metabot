@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, make_response, render_template, abort
+from flask import Flask, request, abort, jsonify
 from slackeventsapi import SlackEventAdapter
 import slack
 
@@ -31,9 +31,12 @@ def my_channels():
 def events(data):
     if not request.json:
         abort(400)
+
     message = "new channel created: {}".format(data["event"]["channel"]["name"])
     for channel in all_my_channels():
         slack_client.chat_postMessage(channel=channel["id"], text=message)
+
+    resp = jsonify(ok=True)
 
 
 def all_my_channels():
