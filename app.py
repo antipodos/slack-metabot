@@ -7,7 +7,7 @@ token = os.environ["SLACK_API_TOKEN"]
 slack_client = slack.WebClient(token=token)
 
 app = Flask(__name__)
-Talisman(app)
+Talisman(app, force_https=True)
 
 @app.route("/", methods=["GET"])
 def home():
