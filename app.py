@@ -1,13 +1,13 @@
 import os
 from flask import Flask, request, make_response, render_template, abort
-from flask_talisman import Talisman
 import slack
+from flask_sslify import SSLify
 
 token = os.environ["SLACK_API_TOKEN"]
 slack_client = slack.WebClient(token=token)
 
 app = Flask(__name__)
-Talisman(app, force_https=True)
+SSLify(app)
 
 @app.route("/", methods=["GET"])
 def home():
