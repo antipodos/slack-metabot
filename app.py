@@ -40,7 +40,7 @@ def events(data):
     return jsonify(ok=True)
 
 
-@app.route("/commands/randomchannel")
+@app.route("/commands/randomchannel", methods=["POST"])
 def command_random_channel():
     channels = slack_client.conversations_list()["channels"]
     channel = random.choice(channels)
