@@ -31,11 +31,9 @@ def my_channels():
 def events(data):
     if not request.json:
         abort(400)
-
     message = "new channel created: {}".format(data["event"]["channel"]["name"])
-
     for channel in all_my_channels():
-        slack_client.chat_postMessage(channel=channel["id"], message=message)
+        slack_client.chat_postMessage(channel=channel["id"], text=message)
 
 
 def all_my_channels():
