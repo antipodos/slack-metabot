@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, abort, jsonify
 from slackeventsapi import SlackEventAdapter
 import slack
+import random
 
 token = os.environ["SLACK_API_TOKEN"]
 signing_secret = os.environ["SLACK_SIGNING_SECRET"]
@@ -36,7 +37,15 @@ def events(data):
     for channel in all_my_channels():
         slack_client.chat_postMessage(channel=channel["id"], text=message)
 
-    resp = jsonify(ok=True)
+    return jsonify(ok=True)
+
+
+@app.route("/commands/randomchannel")
+def command_random_channel():
+    channels = slack_client.conversations_list()["channels"]
+    channel = random.choice(channels)
+
+    return "I picked '{}' for you".format(channel["name"])
 
 
 def all_my_channels():
@@ -49,6 +58,7 @@ def all_my_channels():
             bot_channels.append(channel)
 
     return bot_channels
+
 
 if __name__ == '__main__':
   app.run()
