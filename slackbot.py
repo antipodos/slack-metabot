@@ -53,7 +53,25 @@ def inform_about_new_channel(channel_id):
     post_message_to_my_channels(format_channel_info(channel, "A new channel got created!"))
 
 
+def inform_about_random_channel(channel_to_inform, message):
+    """
+    Post to channel about a random channel
+    :param channel_to_inform: channel to post to
+    :param message: pre text message
+    """
+    post_message_to_channel(channel_to_inform,
+                            format_channel_info(
+                                pick_random_channel(),
+                                message)
+                            )
+
+
 def post_message_to_channel(channel_id, message):
+    """
+    Posts attachments to channel
+    :param channel_id: channel to post to
+    :param message: attachment essage
+    """
     slack_client.chat_postMessage(channel=channel_id, attachments=message["attachments"])
 
 
