@@ -1,5 +1,10 @@
 from flask import Flask, request, abort, jsonify
-from slackbot import create_events_adapter, post_message_to_my_channels, who_am_i, all_my_channels, pick_random_channel
+from slackbot import create_events_adapter, \
+                        post_message_to_my_channels, \
+                        who_am_i, \
+                        all_my_channels, \
+                        pick_random_channel, \
+                        format_channel_info
 from rq import Queue
 from worker import conn
 
@@ -41,7 +46,7 @@ def slack_events_endpoint(data):
 @app.route("/commands/randomchannel", methods=["POST"])
 def slack_command_endpoint_random_channel():
     channel = pick_random_channel()
-    return "I picked '{}' for you".format(channel["name"])
+    return format_channel_info(channel, "There, I picked a random channel for you:")
 
 
 if __name__ == '__main__':

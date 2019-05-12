@@ -111,3 +111,26 @@ def paginated_api_call(api_method, response_objects_name, **kwargs):
             cursor = ""
 
     return ret
+
+
+def format_channel_info(channel, pretext):
+    purpose = "\nPurpose: {}".format(channel["purpose"]["value"]) if channel["purpose"]["value"] != "" else ""
+
+    msg = {
+        "attachments": [
+            {
+                "pretext": pretext,
+                "title": "<#{}|{}>".format(channel["id"], channel["name"]),
+                "fallback": "Channel Info",
+                "color": "#2eb886",
+                "text": "Created by <@{}>{}".format(channel["creator"], purpose),
+                "mrkdwn_in": [
+                    "text",
+                    "pretext"
+                ],
+                "footer": "<https://metabot.object.farm|a Meta Bot service>"
+            }
+        ]
+    }
+
+    return msg
