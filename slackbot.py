@@ -60,7 +60,7 @@ def post_message_to_my_channels(message):
     """
 
     for channel in all_my_channels():
-        slack_client.chat_postMessage(channel=channel["id"], text=message)
+        slack_client.chat_postMessage(channel=channel["id"], attachments=message["attachments"])
 
 
 def all_channels():
