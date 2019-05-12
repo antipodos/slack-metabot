@@ -114,7 +114,7 @@ def paginated_api_call(api_method, response_objects_name, **kwargs):
 
 
 def format_channel_info(channel, pretext):
-    purpose = "\nPurpose: {}".format(channel["purpose"]["value"]) if channel["purpose"]["value"] != "" else ""
+    purpose = "\n_{}_".format(channel["purpose"]["value"]) if channel["purpose"]["value"] != "" else ""
 
     msg = {
         "attachments": [

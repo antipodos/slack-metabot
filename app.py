@@ -9,9 +9,7 @@ from rq import Queue
 from worker import conn
 
 app = Flask(__name__)
-
 redis_queue = Queue(connection=conn)
-
 slack_events_adapter = create_events_adapter(app=app)
 
 
@@ -25,7 +23,6 @@ def web_who_am_i():
     return who_am_i().__str__()
 
 
-
 @app.route("/mychannels", methods=["GET"])
 def web_my_channels():
     return all_my_channels().__str__()
@@ -36,10 +33,8 @@ def slack_events_endpoint(data):
     if not request.json:
         abort(400)
 
-    message = "new channel created: {}".format(data["event"]["channel"]["name"])
-
-    redis_queue.enqueue(post_message_to_my_channels, message)
-
+    redis_queue.enqueue(post_message_to_my_channels, format_channel_info(data["event"]["channel"],
+                                                                         "New channel created!"))
     return jsonify(ok=True)
 
 
