@@ -18,16 +18,6 @@ def web_home():
     return "slack meta bot"
 
 
-@app.route("/whoami", methods=["GET"])
-def web_who_am_i():
-    return who_am_i().__str__()
-
-
-@app.route("/mychannels", methods=["GET"])
-def web_my_channels():
-    return all_my_channels().__str__()
-
-
 @slack_events_adapter.on("channel_created")
 def slack_events_endpoint(data):
     if not request.json:
