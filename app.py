@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, render_template
 from slackbot import create_events_adapter, \
                         inform_about_new_channel, \
                         inform_about_random_channel, \
@@ -14,7 +14,7 @@ slack_events_adapter = create_events_adapter(app=app)
 
 @app.route("/", methods=["GET"])
 def web_home():
-    return "slack meta bot"
+    return render_template("main.html")
 
 
 @slack_events_adapter.on("channel_created")
@@ -39,7 +39,6 @@ def slack_events_app_mention(data):
 
 @app.route("/commands/randomchannel", methods=["POST"])
 def slack_command_endpoint_random_channel():
-
     try:
         ts = request.headers.get('X-Slack-Request-Timestamp')
         sig = request.headers.get('X-Slack-Signature')
@@ -54,6 +53,8 @@ def slack_command_endpoint_random_channel():
     redis_queue.enqueue(inform_responseurl_about_random_channel,
                         request.form['response_url'],
                         "There, I picked a random channel for you:")
+
+    return '', 200
 
 
 if __name__ == '__main__':
