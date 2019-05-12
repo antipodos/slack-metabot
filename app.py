@@ -26,10 +26,14 @@ def slack_events_endpoint(data):
 
 @app.route("/commands/randomchannel", methods=["POST"])
 def slack_command_endpoint_random_channel():
-    ts = request.headers.get('X-Slack-Request-Timestamp')
-    sig = request.headers.get('X-Slack-Signature')
-    request.data = request.get_data()
-    result = slack_events_adapter.server.verify_signature(ts, sig)
+
+    try:
+        ts = request.headers.get('X-Slack-Request-Timestamp')
+        sig = request.headers.get('X-Slack-Signature')
+        request.data = request.get_data()
+        result = slack_events_adapter.server.verify_signature(ts, sig)
+    except:
+        result = False
 
     if not result:
         abort(401)
