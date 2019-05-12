@@ -1,6 +1,7 @@
 from flask import Flask, request, abort, jsonify
 from slackbot import create_events_adapter, \
                         inform_about_new_channel, \
+                        post_message_to_channel, \
                         pick_random_channel, \
                         format_channel_info
 from rq import Queue
@@ -26,11 +27,15 @@ def slack_events_channel_created(data):
 
 @slack_events_adapter.on("app_mention")
 def slack_events_app_mention(data):
-    if not request.json:
-        abort(400)
+    message = data["event"]
+    channel = message["channel"]
 
-    channel = pick_random_channel()
-    return jsonify(format_channel_info(channel, "I've been summoned? There, I picked a random channel for you:"))
+    post_message_to_channel(channel,
+                            format_channel_info(
+                                pick_random_channel(),
+                                "I've been summoned? There, I picked a random channel for you:"))
+
+    jsonify(ok=True)
 
 
 @app.route("/commands/randomchannel", methods=["POST"])

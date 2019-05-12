@@ -53,6 +53,10 @@ def inform_about_new_channel(channel_id):
     post_message_to_my_channels(format_channel_info(channel, "A new channel got created!"))
 
 
+def post_message_to_channel(channel_id, message):
+    slack_client.chat_postMessage(channel=channel_id, attachments=message["attachments"])
+
+
 def post_message_to_my_channels(message):
     """
     Post a message in all channels the bot is member of
