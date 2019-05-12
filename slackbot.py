@@ -44,6 +44,15 @@ def all_my_channels():
     return bot_channels
 
 
+def inform_about_new_channel(channel_id):
+    """
+    Informs all channels the bot is member of about a newly created channel
+    :param channel_id: id of newly created channel
+    """
+    channel = slack_client.conversations_info(channel_id)
+    post_message_to_my_channels(format_channel_info(channel, "A new channel got created!"))
+
+
 def post_message_to_my_channels(message):
     """
     Post a message in all channels the bot is member of
