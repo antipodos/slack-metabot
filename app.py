@@ -1,9 +1,11 @@
 from flask import Flask, request, abort, jsonify
-
 from slackbot import SlackBot
+from rq import Queue
+from worker import conn
 
 app = Flask(__name__)
 bot = SlackBot()
+redis_queue = Queue(connection=conn)
 
 slack_events_adapter = bot.create_events_adapter(app=app)
 
@@ -29,7 +31,8 @@ def slack_events_endpoint(data):
         abort(400)
 
     message = "new channel created: {}".format(data["event"]["channel"]["name"])
-    bot.post_message_to_my_channels(message)
+
+    redis_queue.enqueue(bot.post_message_to_my_channels, message)
 
     return jsonify(ok=True)
 
