@@ -1,0 +1,20 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='my.css')}}">
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid blok1">
+    <div class="pt-5"></div>
+    <div class="jumbotron">
+      <h1 class="display-4">Meta Bot</h1>
+      <p class="lead">Simple Meta Bot for slack, informs about newly created channels, listens to it being mentioned and answers to the "/randomchannel" slash command.</p>
+      <hr class="my-4">
+      <p>Find more on github: <a href="https://github.com/antipodos/slack-metabot">https://github.com/antipodos/slack-metabot</a></p> <br />
+      <p class="text-right small">Photo by Alessio Ferretti on Unsplash</p>
+    </div>
+  </div>
+{% endblock %}

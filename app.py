@@ -1,4 +1,5 @@
 from flask import Flask, request, abort, jsonify, render_template
+from flask_bootstrap import Bootstrap
 from slackbot import create_events_adapter, \
                         inform_about_new_channel, \
                         inform_about_random_channel, \
@@ -8,6 +9,7 @@ from rq import Queue
 from worker import conn
 
 app = Flask(__name__)
+Bootstrap(app)
 redis_queue = Queue(connection=conn)
 slack_events_adapter = create_events_adapter(app=app)
 
