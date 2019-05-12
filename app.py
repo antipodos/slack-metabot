@@ -1,8 +1,6 @@
 from flask import Flask, request, abort, jsonify
 from slackbot import create_events_adapter, \
                         inform_about_new_channel, \
-                        who_am_i, \
-                        all_my_channels, \
                         pick_random_channel, \
                         format_channel_info
 from rq import Queue
