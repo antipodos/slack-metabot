@@ -26,6 +26,14 @@ def slack_events_endpoint(data):
 
 @app.route("/commands/randomchannel", methods=["POST"])
 def slack_command_endpoint_random_channel():
+    ts = request.headers.get('X-Slack-Request-Timestamp')
+    sig = request.headers.get('X-Slack-Signature')
+    request.data = request.get_data()
+    result = slack_events_adapter.server.verify_signature(ts, sig)
+
+    if not result:
+        abort(401)
+
     channel = pick_random_channel()
     return jsonify(format_channel_info(channel, "There, I picked a random channel for you:"))
 
