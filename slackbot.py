@@ -1,5 +1,6 @@
 import os
 from slack import WebClient
+import requests
 from slackeventsapi import SlackEventAdapter
 import random
 
@@ -64,6 +65,10 @@ def inform_about_random_channel(channel_to_inform, message):
                                 pick_random_channel(),
                                 message)
                             )
+
+def inform_responseurl_about_random_channel(response_url, message):
+    channel = pick_random_channel()
+    requests.post(response_url, json=format_channel_info(channel, message))
 
 
 def post_message_to_channel(channel_id, message):

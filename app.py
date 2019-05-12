@@ -1,10 +1,9 @@
 from flask import Flask, request, abort, jsonify
-import requests
 from slackbot import create_events_adapter, \
                         inform_about_new_channel, \
                         inform_about_random_channel, \
-                        pick_random_channel, \
-                        format_channel_info
+                        inform_responseurl_about_random_channel
+
 from rq import Queue
 from worker import conn
 
@@ -52,13 +51,9 @@ def slack_command_endpoint_random_channel():
     if not result:
         abort(401)
 
-    response_url = request.form['response_url']
-
-    channel = pick_random_channel()
-    requests.post(response_url, json=format_channel_info(channel, "There, I picked a random channel for you:"))
-
-
-    return jsonify(ok=True)
+    redis_queue.enqueue(inform_responseurl_about_random_channel,
+                        request.form['response_url'],
+                        "There, I picked a random channel for you:")
 
 
 if __name__ == '__main__':
