@@ -16,7 +16,9 @@ multidict==4.5.2
 pycares==3.0.0
 pycparser==2.19
 pyee==6.0.0
+redis==3.2.1
 requests==2.21.0
+rq==1.0
 six==1.12.0
 slackclient==2.0.0
 slackeventsapi==2.1.0

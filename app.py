@@ -1,63 +1,43 @@
-import os
 from flask import Flask, request, abort, jsonify
-from slackeventsapi import SlackEventAdapter
-import slack
-import random
 
-token = os.environ["SLACK_API_TOKEN"]
-signing_secret = os.environ["SLACK_SIGNING_SECRET"]
+from slackbot import SlackBot
 
 app = Flask(__name__)
+bot = SlackBot()
 
-slack_client = slack.WebClient(token=token)
-slack_events_adapter = SlackEventAdapter(signing_secret, "/events", app)
+slack_events_adapter = bot.create_events_adapter(app=app)
 
 
 @app.route("/", methods=["GET"])
-def home():
+def web_home():
     return "slack meta bot"
 
 
 @app.route("/whoami", methods=["GET"])
-def who_am_i():
-    return slack_client.auth_test().__str__()
+def web_who_am_i():
+    return bot.who_am_i().__str__()
 
 
 @app.route("/mychannels", methods=["GET"])
-def my_channels():
-    return all_my_channels().__str__()
+def web_my_channels():
+    return bot.all_my_channels().__str__()
 
 
 @slack_events_adapter.on("channel_created")
-def events(data):
+def slack_events_endpoint(data):
     if not request.json:
         abort(400)
 
     message = "new channel created: {}".format(data["event"]["channel"]["name"])
-    for channel in all_my_channels():
-        slack_client.chat_postMessage(channel=channel["id"], text=message)
+    bot.post_message_to_my_channels(message)
 
     return jsonify(ok=True)
 
 
 @app.route("/commands/randomchannel", methods=["POST"])
-def command_random_channel():
-    channels = slack_client.conversations_list()["channels"]
-    channel = random.choice(channels)
-
+def slack_command_endpoint_random_channel():
+    channel = bot.pick_random_channel()
     return "I picked '{}' for you".format(channel["name"])
-
-
-def all_my_channels():
-    bot_id = slack_client.auth_test()["user_id"]
-
-    bot_channels = list()
-    for channel in slack_client.conversations_list()["channels"]:
-        members = slack_client.conversations_members(channel=channel["id"])["members"]
-        if bot_id in members:
-            bot_channels.append(channel)
-
-    return bot_channels
 
 
 if __name__ == '__main__':
