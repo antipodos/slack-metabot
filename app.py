@@ -17,11 +17,20 @@ def web_home():
 
 
 @slack_events_adapter.on("channel_created")
-def slack_events_endpoint(data):
+def slack_events_channel_created(data):
     if not request.json:
         abort(400)
     redis_queue.enqueue(inform_about_new_channel, data["event"]["channel"]["id"])
     return jsonify(ok=True)
+
+
+@slack_events_adapter.on("app_mention")
+def slack_events_app_mention(data):
+    if not request.json:
+        abort(400)
+
+    channel = pick_random_channel()
+    return jsonify(format_channel_info(channel, "I've been summoned? There, I picked a random channel for you:"))
 
 
 @app.route("/commands/randomchannel", methods=["POST"])
