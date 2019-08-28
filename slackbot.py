@@ -6,6 +6,8 @@ import random
 
 token = os.environ["SLACK_API_TOKEN"]
 signing_secret = os.environ["SLACK_SIGNING_SECRET"]
+metachannel_id = os.environ["SLACK_METACHANNEL_ID"]
+
 slack_client = WebClient(token=token)
 call_limit = 100
 
@@ -51,7 +53,10 @@ def inform_about_new_channel(channel_id):
     :param channel_id: id of newly created channel
     """
     channel = slack_client.conversations_info(channel=channel_id)["channel"]
-    post_message_to_my_channels(format_channel_info(channel, "A new channel got created!"))
+    #post_message_to_my_channels(format_channel_info(channel, "A new channel got created!"))
+
+    #performance fix
+    post_message_to_channel(metachannel_id, message=format_channel_info(channel, "A new channel got created!"))
 
 
 def inform_about_random_channel(channel_to_inform, message):
@@ -87,7 +92,7 @@ def post_message_to_my_channels(message):
     """
 
     for channel in all_my_channels():
-        slack_client.chat_postMessage(channel=channel["id"], attachments=message["attachments"])
+        post_message_to_channel(channel_id=channel["id"], message=message)
 
 
 def all_channels():

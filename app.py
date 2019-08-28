@@ -36,7 +36,7 @@ def slack_events_app_mention(data):
                         channel,
                         "I've been summoned? There, I picked a random channel for you:")
 
-    jsonify(ok=True)
+    return jsonify(ok=True)
 
 
 @app.route("/commands/randomchannel", methods=["POST"])
