@@ -13,6 +13,8 @@ Bootstrap(app)
 redis_queue = Queue(connection=conn)
 slack_events_adapter = create_events_adapter(app=app)
 
+redis_reported_channels_key = "reported_channels"
+
 
 @app.route("/", methods=["GET"])
 def web_home():
@@ -23,8 +25,22 @@ def web_home():
 def slack_events_channel_created(data):
     if not request.json:
         abort(400)
-    redis_queue.enqueue(inform_about_new_channel, data["event"]["channel"]["id"])
+
+    channel_id = data["event"]["channel"]["id"]
+
+    if not channel_got_reported(channel_id):
+        redis_queue.enqueue(inform_about_new_channel, channel_id)
+        add_channel_to_reported_channels(channel_id)
+
     return jsonify(ok=True)
+
+
+def add_channel_to_reported_channels(channel_id):
+    conn.sadd(redis_reported_channels_key, channel_id)
+
+
+def channel_got_reported(channel_id):
+    return conn.sismember(redis_reported_channels_key, channel_id)
 
 
 @slack_events_adapter.on("app_mention")
