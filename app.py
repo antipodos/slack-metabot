@@ -26,13 +26,15 @@ def slack_events_channel_created(data):
     if not request.json:
         abort(400)
 
-    channel_id = data["event"]["channel"]["id"]
-
-    if not channel_got_reported(channel_id):
-        redis_queue.enqueue(inform_about_new_channel, channel_id)
-        add_channel_to_reported_channels(channel_id)
+    redis_queue.enqueue(worker_inform_about_new_channel, data["event"]["channel"]["id"])
 
     return jsonify(ok=True)
+
+
+def worker_inform_about_new_channel(channel_id):
+    if not channel_got_reported(channel_id):
+        add_channel_to_reported_channels(channel_id)
+        inform_about_new_channel(channel_id)
 
 
 def add_channel_to_reported_channels(channel_id):
