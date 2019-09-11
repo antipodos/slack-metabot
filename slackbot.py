@@ -7,6 +7,7 @@ import random
 token = os.environ["SLACK_API_TOKEN"]
 signing_secret = os.environ["SLACK_SIGNING_SECRET"]
 metachannel_id = os.environ["SLACK_METACHANNEL_ID"]
+footer_message = "<https://metabot.object.farm|a Meta Bot service>"
 
 slack_client = WebClient(token=token)
 call_limit = 100
@@ -71,9 +72,18 @@ def inform_about_random_channel(channel_to_inform, message):
                                 message)
                             )
 
+
 def inform_responseurl_about_random_channel(response_url, message):
     channel = pick_random_channel()
     requests.post(response_url, json=format_channel_info(channel, message))
+
+
+def inform_responseurl_about_channelstats(response_url, message):
+    number_of_channels = len(all_channels())
+    requests.post(response_url, json=format_slack_message(message,
+                                                          "Channel Stats",
+                                                          number_of_channels,
+                                                          footer_message))
 
 
 def post_message_to_channel(channel_id, message):
@@ -153,25 +163,31 @@ def paginated_api_call(api_method, response_objects_name, **kwargs):
 
     return ret
 
-
-def format_channel_info(channel, pretext):
-    purpose = "\n_{}_".format(channel["purpose"]["value"]) if channel["purpose"]["value"] != "" else ""
-
+def format_slack_message(pretext, title, text, footer):
     msg = {
         "attachments": [
             {
                 "pretext": pretext,
-                "title": "<#{}|{}>".format(channel["id"], channel["name"]),
-                "fallback": "Channel Info",
+                "title": title,
+                "fallback": title,
                 "color": "#2eb886",
-                "text": "Created by <@{}>{}".format(channel["creator"], purpose),
+                "text": text,
                 "mrkdwn_in": [
                     "text",
                     "pretext"
                 ],
-                "footer": "<https://metabot.object.farm|a Meta Bot service>"
+                "footer": footer
             }
         ]
     }
 
     return msg
+
+
+def format_channel_info(channel, pretext):
+    purpose = "\n_{}_".format(channel["purpose"]["value"]) if channel["purpose"]["value"] != "" else ""
+
+    return format_slack_message(pretext,
+                                "<#{}|{}>".format(channel["id"], channel["name"]),
+                                "Created by <@{}>{}".format(channel["creator"], purpose),
+                                footer_message)

@@ -3,7 +3,8 @@ from flask_bootstrap import Bootstrap
 from slackbot import create_events_adapter, \
                         inform_about_new_channel, \
                         inform_about_random_channel, \
-                        inform_responseurl_about_random_channel
+                        inform_responseurl_about_random_channel, \
+                        inform_responseurl_about_channelstats
 
 from rq import Queue
 from worker import conn
@@ -73,6 +74,26 @@ def slack_command_endpoint_random_channel():
     redis_queue.enqueue(inform_responseurl_about_random_channel,
                         request.form['response_url'],
                         "There, I picked a random channel for you:")
+
+    return '', 200
+
+
+@app.route("/commands/channelstats", methods=["POST"])
+def slack_command_endpoint_channelstats():
+    try:
+        ts = request.headers.get('X-Slack-Request-Timestamp')
+        sig = request.headers.get('X-Slack-Signature')
+        request.data = request.get_data()
+        result = slack_events_adapter.server.verify_signature(ts, sig)
+    except:
+        result = False
+
+    if not result:
+        abort(401)
+
+    redis_queue.enqueue(inform_responseurl_about_channelstats,
+                        request.form['response_url'],
+                        "Metabot informs")
 
     return '', 200
 
