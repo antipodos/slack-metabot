@@ -4,7 +4,7 @@ from slackbot import create_events_adapter, \
                         inform_about_new_channel, \
                         inform_about_random_channel, \
                         inform_responseurl_about_random_channel, \
-                        inform_responseurl_about_channelstats
+                        inform_responseurl_about_slackstats
 
 from rq import Queue
 from worker import conn
@@ -78,8 +78,8 @@ def slack_command_endpoint_random_channel():
     return '', 200
 
 
-@app.route("/commands/channelstats", methods=["POST"])
-def slack_command_endpoint_channelstats():
+@app.route("/commands/slackstats", methods=["POST"])
+def slack_command_endpoint_slackstats():
     try:
         ts = request.headers.get('X-Slack-Request-Timestamp')
         sig = request.headers.get('X-Slack-Signature')
@@ -91,7 +91,7 @@ def slack_command_endpoint_channelstats():
     if not result:
         abort(401)
 
-    redis_queue.enqueue(inform_responseurl_about_channelstats,
+    redis_queue.enqueue(inform_responseurl_about_slackstats,
                         request.form['response_url'],
                         "Metabot informs")
 

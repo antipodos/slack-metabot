@@ -78,11 +78,11 @@ def inform_responseurl_about_random_channel(response_url, message):
     requests.post(response_url, json=format_channel_info(channel, message))
 
 
-def inform_responseurl_about_channelstats(response_url, message):
+def inform_responseurl_about_slackstats(response_url, message):
     number_of_channels = len(all_channels())
     requests.post(response_url, json=format_slack_message(message,
-                                                          "Channel Stats",
-                                                          number_of_channels,
+                                                          "Slack Stats",
+                                                          "Number of Channels: {}".format(number_of_channels),
                                                           footer_message))
 
 
